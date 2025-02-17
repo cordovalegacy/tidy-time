@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <HelloWorld />
+  <div>
+    <p>HELLO WORLD!!</p>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
