@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import NavigationBar from "./components/NavigationBar.vue";
-import NavigationDrawer from "./components/NavigationDrawer.vue";
+import NavigationBar from "./domains/shared/components/NavigationBar.vue";
+import NavigationDrawer from "./domains/shared/components/NavigationDrawer.vue";
 
 const shouldShowNavDrawer = ref(false);
 

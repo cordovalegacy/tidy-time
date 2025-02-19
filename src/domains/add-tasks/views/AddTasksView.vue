@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import SubmitTasks from "./SubmitTasks.vue";
-import { systemPrompt } from "../../utils/generateTasksSystemPrompt";
+import SubmitTasks from "../components/SubmitTasksForm.vue";
+import { useGenerateTaskQuery } from "../api/useGenerateTaskQuery";
 
 type Task = {
   category: string;
@@ -13,13 +13,11 @@ type TaskResponse = {
 };
 
 const prompt = ref("");
-const stream = ref<MediaStream | null>(null);
 const isLoading = ref(false);
-const tasks = ref<TaskResponse | null>(null);
 const selectedTasks = ref<string[]>([]);
-
-const API_KEY = "AIzaSyAPKrAIASBMWDkw3lcB2mOSze4DXikOGv8";
-const MODEL_ID = "gemini-pro";
+const stream = ref<MediaStream | null>(null);
+const tasks = ref<TaskResponse | null>(null);
+const { generateTasks } = useGenerateTaskQuery();
 
 const toggleTask = (toggledTask: string) => {
   if (selectedTasks.value.includes(toggledTask)) {
@@ -28,53 +26,6 @@ const toggleTask = (toggledTask: string) => {
     );
   } else {
     selectedTasks.value.push(toggledTask);
-  }
-};
-
-const generateTasks = async (userPrompt: string) => {
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/${MODEL_ID}:generateContent?key=${API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: systemPrompt }, { text: userPrompt }],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            topP: 0.8,
-            topK: 40,
-            maxOutputTokens: 2048,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      console.error("SOMETHING WENT WRONG", await response.text());
-      throw new Error(`API call failed: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    const rawJsonText = data.candidates[0].content.parts[0].text;
-    const sanitizedJsonText = rawJsonText
-      .replace(/```[jJ][sS][oO][nN]/, "")
-      .replace(/```/g, "")
-      .trim();
-
-    console.log("Cleaned JSON text:", sanitizedJsonText);
-    clearPrompt();
-    return JSON.parse(sanitizedJsonText) as TaskResponse;
-  } catch (error) {
-    console.error("Error generating tasks:", error);
-    throw error;
   }
 };
 

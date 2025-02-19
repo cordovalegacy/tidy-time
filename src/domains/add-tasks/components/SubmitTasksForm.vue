@@ -4,10 +4,10 @@ import { useDisplay } from "vuetify/lib/framework.mjs";
 defineProps<{
   value: string;
   isLoading: boolean;
+  onInput: (value: string) => void;
   clearPrompt: () => void;
   toggleCamera: () => void;
   toggleMicrophone: () => void;
-  onInput: (value: string) => void;
   sendPrompt: (event: Event) => void;
 }>();
 
@@ -20,8 +20,8 @@ const { mobile } = useDisplay();
       <v-row>
         <v-col cols="12" class="pa-2">
           <v-text-field
-            :value="value"
-            @input="(event:Event) => onInput((event.target as HTMLInputElement).value)"
+            :model-value="value"
+            @update:model-value="onInput"
             :append-icon="value ? 'mdi-send' : 'mdi-microphone'"
             :append-inner-icon="mobile ? 'mdi-camera' : undefined"
             clear-icon="mdi-close-circle"

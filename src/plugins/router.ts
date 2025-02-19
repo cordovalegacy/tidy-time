@@ -1,6 +1,6 @@
-import Home from "../components/Home.vue";
-import Calendar from "../components/Calendar.vue";
-import GenerateTasks from "../domains/add-tasks/AddTasks.vue";
+import Home from "../domains/home/views/HomeView.vue";
+import Calendar from "../domains/schedule/components/Calendar.vue";
+import GenerateTasks from "../domains/add-tasks/views/AddTasksView.vue";
 import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
