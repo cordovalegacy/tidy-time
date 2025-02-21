@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { db } from "../../../plugins/firebase";
+import { addDoc, collection } from "firebase/firestore";
 import SubmitTasks from "../components/SubmitTasksForm.vue";
 import { useGenerateTaskQuery } from "../api/useGenerateTaskQuery";
 
@@ -18,6 +20,41 @@ const selectedTasks = ref<string[]>([]);
 const stream = ref<MediaStream | null>(null);
 const tasks = ref<TaskResponse | null>(null);
 const { generateTasks } = useGenerateTaskQuery();
+
+const findCategoryForTask = (taskText: string): string => {
+  if (!tasks.value) return "uncategorized";
+
+  for (const category of tasks.value.tasks) {
+    if (category.tasks.includes(taskText)) {
+      return category.category;
+    }
+  }
+  return "uncategorized";
+};
+
+const saveTasks = async () => {
+  try {
+    const tasksCollection = collection(db, "tasks");
+
+    // Save each selected task
+    const savePromises = selectedTasks.value.map((taskText) => {
+      return addDoc(tasksCollection, {
+        task: taskText,
+        completed: false,
+        createdAt: new Date(),
+        category: findCategoryForTask(taskText),
+      });
+    });
+
+    await Promise.all(savePromises);
+
+    // Clear selection after saving
+    selectedTasks.value = [];
+    console.log("Tasks saved successfully!");
+  } catch (error) {
+    console.error("Error saving tasks:", error);
+  }
+};
 
 const toggleTask = (toggledTask: string) => {
   if (selectedTasks.value.includes(toggledTask)) {
@@ -156,6 +193,7 @@ const sendPrompt = async (event: Event) => {
             variant="flat"
             width="90"
             rounded
+            @click="saveTasks"
           >
             Save
           </v-btn>

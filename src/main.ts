@@ -1,4 +1,5 @@
 import "./style.css";
+import "./plugins/firebase"
 import App from "./App.vue";
 import { createApp } from "vue";
 import vuetify from "./plugins/vuetify";
